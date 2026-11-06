@@ -1,0 +1,7 @@
+俄语扩展词典提示（БКРС，可选）
+默认安装仅包含 1,656 条中俄学习词，不含约 157 万条扩展词条。
+如需大范围俄语释义，请在本机取得 БКРС 词典，并按指南导入；也可以暂不导入，继续使用基础词表。
+导入指南：https://github.com/iyangbo02/qingjian-russian/blob/main/docs/notes/russian-dictionaries.md
+官方下载：https://bkrs.info/p47
+重音补标还需要指南中的 OpenRussian 数据；未知或同形异音词可能不标重音。
+本安装流程只显示提示，不自动下载第三方词典，也不自动覆盖已有词库；词条数量随数据版本而变化。

@@ -34,6 +34,10 @@ case "${TARGET:-$(uname -m)}" in
 esac
 
 cd "$ROOT"
+# 无论通过 Codex 构建安装还是打开 pkg，都能看到扩展词典入口。
+case "${1:-}" in
+  --install|--pkg) cat "$ROOT/tools/install/russian-dictionary-notice.txt" ;;
+esac
 # 构建标识进「关于」页与诊断信息：git 短哈希（工作区有改动加 +）与日期；编译期 option_env! 读
 GIT_REV="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
 if [[ -n "$(git status --porcelain 2>/dev/null)" ]]; then GIT_REV="${GIT_REV}+"; fi

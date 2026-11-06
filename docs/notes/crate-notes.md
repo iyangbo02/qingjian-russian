@@ -357,3 +357,5 @@ Unix socket 用共享长度前缀与 Frame（当前公共版本 7，与 `PROTOCO
 - 补译解析保留 U+0301，仅允许它紧跟俄语元音；本地 TSV 与 QJ 往返测试验证重音保留。
 
 - 俄语大规模本地导入：`tools/corpus/glossary_ru_bkrs.py`（БКРС DSL + OpenRussian）；格式、来源、许可和部署见 [俄语扩展词典](russian-dictionaries.md)。产物仅在 `data/generated/bkrs/`，不覆盖小型学习词表。
+
+- 俄语衍生版安装提示：`tools/install/russian-dictionary-notice.txt` 供 macOS 打包/开发安装与 Linux 安装脚本显示；macOS pkg 的 welcome/conclusion 与 Windows FinishedLabel 同步说明基础词表规模、БКРС 导入链接及不自动下载/覆盖的行为。

@@ -43,3 +43,9 @@ description: macOS 与 Windows 的安装步骤：系统要求、安装包、首�
 ## 升级与卸载
 
 升级时直接安装新版安装包，学习数据与设置均保留。卸载见 [卸载](../help/uninstall.md)。
+
+## 俄语衍生版的词典提示
+
+本分支生成的 macOS 安装包在欢迎页和完成页提示 БКРС 扩展词典；macOS 的 `--pkg` / `--install` 构建命令及 Linux 安装脚本在终端显示同样的提示，供使用者和协助安装的 Codex 阅读。Windows 安装器完成页显示提示（尚未在 Windows 实机验证）；静默安装不会显示完成页。
+
+默认只有 1,656 条学习词，БКРС 大型词典为可选扩展，需用户另行取得并按 [导入指南](https://github.com/iyangbo02/qingjian-russian/blob/main/docs/notes/russian-dictionaries.md) 处理。提示会自动出现，但不会自动下载或导入词典，也不会自动替换已有扩展表。

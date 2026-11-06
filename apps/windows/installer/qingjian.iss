@@ -64,7 +64,7 @@ Name: "chs"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
 [Messages]
 ; 完成页：DLL 会装进每个应用进程，装之前就开着的应用要用新版必须重启（见文件头「升级」）。
 ; 这是最容易被误解成「设置/新版没生效」的一点，所以放在完成页明说。
-FinishedLabel=安装完成。请注销后重新登录（或重启电脑），青简才会在所有应用里生效。%n%n不方便注销的话，先关掉再重新打开要打字的应用也可以。
+FinishedLabel=安装完成。请注销后重新登录（或重启电脑），青简才会在所有应用里生效。%n%n不方便注销的话，先关掉再重新打开要打字的应用也可以。%n%n俄语扩展词典（БКРС，可选）：默认仅含 1,656 条学习词，不含约 157 万条扩展词。需要扩大覆盖时，请按指南自行取得词典并导入；安装器不会自动下载或覆盖词库。%n导入指南：https://github.com/iyangbo02/qingjian-russian/blob/main/docs/notes/russian-dictionaries.md
 
 [Files]
 ; —— 二进制 ——

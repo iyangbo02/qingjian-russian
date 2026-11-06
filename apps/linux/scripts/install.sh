@@ -15,6 +15,7 @@ while (($#)); do
     *) echo "未知参数：$1" >&2; exit 2 ;;
   esac
 done
+cat "$repo_root/tools/install/russian-dictionary-notice.txt"
 [[ "$install_prefix" = /* && "$install_prefix" != / ]] || { echo '需要非根绝对安装路径' >&2; exit 2; }
 # 缺依赖先说清楚，别等编译到一半才报一长串错。
 missing=()

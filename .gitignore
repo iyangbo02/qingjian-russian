@@ -6,3 +6,8 @@
 /logs
 /data
 .playwright-mcp/
+
+# Local-only caches and private installation state
+__pycache__/
+*.pyc
+/backups/

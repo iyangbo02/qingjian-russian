@@ -5,7 +5,9 @@ use jiff::Zoned;
 use qingjian_core::{Language, Usage, UsageSummary, VocabularySummary, book_scale};
 use qingjian_learning::{UsageStats, VocabularyBook};
 use qingjian_translate::LevelTable;
-use windows_reactor::*;
+use windows_reactor::{
+    FontWeight, KeyedView, Orientation, StackPanel, TextBlock, View, ViewContext,
+};
 
 use crate::panel::Settings;
 use crate::panel::controls::{note, page, repo_resource};
@@ -17,6 +19,7 @@ fn language_name(language: Language) -> &'static str {
         Language::English => "英语",
         Language::Japanese => "日语",
         Language::Spanish => "西班牙语",
+        Language::Russian => "俄语",
         Language::Chinese => "中文",
     }
 }

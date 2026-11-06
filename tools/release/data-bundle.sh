@@ -25,7 +25,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-PRODUCT_FILES=(dict.qj lm.qj glossary-en.qj glossary-ja.qj glossary-zh.qj glossary-es.qj english.tsv english-frequency.tsv)
+# 俄语初始词表来自仓库，旧版上游数据包不包含它。
+cargo run --release --locked -q -p qingjian-dict-convert -- pack glossary --language ru \
+  --name "青简俄语释义表" --license "GPL-3.0-or-later AND CC-BY-SA-4.0" --attribution "中俄配对由 AI 编写；重音来源 OpenRussian.org，未经专业校对"
+
+PRODUCT_FILES=(dict.qj lm.qj glossary-en.qj glossary-ja.qj glossary-zh.qj glossary-es.qj glossary-ru.qj english.tsv english-frequency.tsv)
 MODEL_FILE=data/models/hanzhang-zhiwei/hanzhang-zhiwei-small.qjm
 P2C_MODEL_FILE=data/models/hanzhang-tongbian/hanzhang-tongbian-small.qjm
 

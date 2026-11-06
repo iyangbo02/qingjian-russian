@@ -1,16 +1,20 @@
 //! 「通用」页：学习语言、每页候选数、输入方案、英文模式候选。
 
 use qingjian_platform::{MAX_PAGE_SIZE, Scheme, ShiftLetter, SwitchKey};
-use windows_reactor::*;
+use windows_reactor::{
+    Callback, CheckBox, ComboBox, NumberBox, Orientation, StackPanel, ToggleSwitch, View,
+    ViewContext,
+};
 
 use crate::panel::controls::{feedback, field, index_of, page};
 use crate::panel::{Message, Settings};
 
 /// 学习语言：界面名 + 配置写法。
-pub(crate) const LANGUAGES: [(&str, &str); 4] = [
+pub(crate) const LANGUAGES: [(&str, &str); 5] = [
     ("英语", "en"),
     ("日语", "ja"),
     ("西班牙语", "es"),
+    ("俄语", "ru"),
     ("不显示译文", "off"),
 ];
 

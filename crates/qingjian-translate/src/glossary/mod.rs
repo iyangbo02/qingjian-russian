@@ -363,7 +363,7 @@ mod tests {
 
     #[test]
     fn qj_round_trip_keeps_every_sense() {
-        let source = "开发\tv. develop\tv. exploit\n你好\tint. hello\n開発\tn. 開発|かいはつ\n";
+        let source = "开发\tv. develop\tv. exploit\n你好\tint. hello\n学习\tv. учи́ться\n開発\tn. 開発|かいはつ\n";
         let glossary = Glossary::parse(Language::English, source).unwrap();
         let dir = std::env::temp_dir().join("qingjian-glossary-tests");
         std::fs::create_dir_all(&dir).unwrap();
@@ -379,13 +379,49 @@ mod tests {
             .unwrap();
         let mapped = Glossary::from_path(Language::English, &path).unwrap();
         std::fs::remove_file(&path).unwrap();
-        assert_eq!(mapped.len(), 3);
-        for word in ["开发", "你好", "開発"] {
+        assert_eq!(mapped.len(), 4);
+        for word in ["开发", "你好", "学习", "開発"] {
             assert_eq!(mapped.translate(word), glossary.translate(word), "{word}");
         }
         assert_eq!(mapped.translate("没有"), None);
         let senses = mapped.translate("開発").unwrap();
         assert_eq!(senses.senses()[0].reading.as_deref(), Some("かいはつ"));
         assert_eq!(senses.senses()[0].part_of_speech, Some(PartOfSpeech::Noun));
+    }
+
+    #[test]
+    fn bundled_russian_glossary_loads_utf8() {
+        let glossary = Glossary::parse(
+            Language::Russian,
+            include_str!("../../../../assets/glossary/glossary-ru.tsv"),
+        )
+        .unwrap();
+        let translation = glossary.translate("飞机").unwrap();
+        assert_eq!(translation.language, Language::Russian);
+        assert_eq!(translation.senses()[0].text, "самолёт");
+        assert_eq!(
+            glossary.translate("学习").unwrap().senses()[0].text,
+            "учи́ться"
+        );
+        let source = include_str!("../../../../assets/glossary/glossary-ru.tsv");
+        for line in source
+            .lines()
+            .filter(|line| !line.starts_with('#') && !line.is_empty())
+        {
+            let (word, _) = line.split_once('\t').unwrap();
+            let translation = glossary.translate(word).unwrap();
+            for sense in translation.senses() {
+                for token in sense.text.split([' ', '-']) {
+                    let vowels = token
+                        .chars()
+                        .filter(|c| "АЕЁИОУЫЭЮЯаеёиоуыэюя".contains(*c))
+                        .count();
+                    if vowels > 1 && !token.contains(['ё', 'Ё']) {
+                        assert_eq!(token.matches('\u{0301}').count(), 1, "{word}: {token}");
+                    }
+                }
+            }
+        }
+        assert!(glossary.translate("没有收录的词").is_none());
     }
 }

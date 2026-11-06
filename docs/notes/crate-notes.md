@@ -342,3 +342,18 @@ DLL 不读文件、不查 mtime。`SessionOpened` 只回过协议版本对得上
 Unix socket 用共享长度前缀与 Frame（当前公共版本 7，与 `PROTOCOL_VERSION` 同步，Fcitx5 插件里写死在 `qingjian.cpp` 的 OpenSession）；插件复用一条连接，每个上下文独立会话。Linux v3 扩展逐会话握手、确认 Sensitive/Password/Disable 后接受按下/释放、焦点和点击事实。
 候选回报绑定连接代次、上下文和服务端帧序号，仅当前聚焦页的有效释义进入 `note_displayed`，不把生成帧算作已展示。
 `[general] preedit` 使用已有 `both` / `inline` / `window`；没有新增 Linux 自绘配置。详见 [linux-fcitx5.md](linux-fcitx5.md)。
+
+## 俄语学习语言
+
+- `Language::Russian` 对应 `ru`，支持配置别名 `ru-RU` / `russian`。
+- 随包译词表（1,656 个词条，组合重音 U+0301） `assets/glossary/glossary-ru.tsv`，来源与许可见同目录 README；打包文件为 `glossary-ru.qj`。
+- macOS / Windows 设置加入俄语；Linux 配置 `[general] learning_language = "ru"`。
+- 释义兜底提示词要求俄语词典形式；按字符限制长度，允许 ё 和组合重音，拒绝中文、拉丁转写和括号解释。
+- 个人译词写入 `user-glossary-ru.tsv`，词汇记录保留 `ru` 标签；无俄语等级表时只统计词汇量。
+- 现有 `data.lock` 的上游数据包尚无俄语 `.qj`。本地打包前执行俄语 pack 命令；新数据版本发布前不改锁文件。
+
+- 俄语重音来源 OpenRussian 快照及定向校核，具体词形选择记录在 `assets/glossary/ru-stress-sources.json`。
+- macOS / Windows 安装包附带 OpenRussian 数据许可与来源；Linux 现有 assets/glossary 复制流程覆盖这些文件。
+- 补译解析保留 U+0301，仅允许它紧跟俄语元音；本地 TSV 与 QJ 往返测试验证重音保留。
+
+- 俄语大规模本地导入：`tools/corpus/glossary_ru_bkrs.py`（БКРС DSL + OpenRussian）；格式、来源、许可和部署见 [俄语扩展词典](russian-dictionaries.md)。产物仅在 `data/generated/bkrs/`，不覆盖小型学习词表。

@@ -15,6 +15,9 @@ const MAX_JAPANESE_CHARS: usize = 16;
 /// 单条西班牙文译词最多几个字符：西语词比英文长（`restablecimiento`），放宽一点。
 const MAX_SPANISH_CHARS: usize = 32;
 
+/// 俄语按字符计长，组合重音不占词长度。
+const MAX_RUSSIAN_CHARS: usize = 40;
+
 pub const ENGLISH_SYSTEM_PROMPT: &str = "你是汉英词典编纂者。给每个中文词写最简短的英文对应词，供拼音输入法在候选词旁边一行显示，所以只要词、不要解释。\n\
 规则：\n\
 - pos：这个中文词最主要的词性，只能是 n. v. adj. adv. pron. prep. conj. num. m. part. int. phr. 之一（m. 量词，part. 助词，phr. 短语或成语）。\n\
@@ -39,11 +42,20 @@ pub const SPANISH_SYSTEM_PROMPT: &str = "你是汉西词典编纂者。给每个
 输出严格的 JSON：{\"items\":[{\"w\":\"开发\",\"pos\":\"v.\",\"senses\":[{\"t\":\"desarrollar\"},{\"t\":\"explotar\"}]}]}。\n\
 items 与输入的词一一对应、顺序一致、每个词恰好一项，w 必须原样照抄输入的词。";
 
+pub const RUSSIAN_SYSTEM_PROMPT: &str = "你是汉俄词典编纂者。给每个中文词写最简短的俄文对应词，供拼音输入法在候选词旁边一行显示，所以只要词、不要解释。\n\
+规则：\n\
+- pos：中文词的主要词性，只能是 n. v. adj. adv. pron. prep. conj. num. m. part. int. phr. 之一。\n\
+- senses：1 到 2 条最贴切的俄文对应词，按常用度排；每条不超过 4 个词；动词用不定式，名词用单数主格（只有复数的名词保留复数），形容词用阳性单数主格。\n\
+- 用俄语字母，保留 ё；每个多音节词在重读元音后添加组合重音 U+0301（如 учи́ться）；单音节词不标，含 ё 的词不再额外标；不要拉丁转写、括号、解释或例句；专名用俄语惯用写法。\n\
+输出严格的 JSON：{\"items\":[{\"w\":\"开发\",\"pos\":\"v.\",\"senses\":[{\"t\":\"разрабатывать\"}]}]}。\n\
+items 与输入的词一一对应、顺序一致、每个词恰好一项，w 必须原样照抄输入的词。";
+
 /// 学习语言对应的系统提示；中文没有（不会请求）。
 pub fn system_prompt(language: Language) -> &'static str {
     match language {
         Language::Japanese => JAPANESE_SYSTEM_PROMPT,
         Language::Spanish => SPANISH_SYSTEM_PROMPT,
+        Language::Russian => RUSSIAN_SYSTEM_PROMPT,
         Language::English | Language::Chinese => ENGLISH_SYSTEM_PROMPT,
     }
 }
@@ -148,6 +160,15 @@ fn clean_text(raw: &str, language: Language) -> Option<String> {
                 && text.split_whitespace().count() <= 4
                 && text.chars().all(is_spanish_char)
         }
+        Language::Russian => {
+            text.chars().filter(|c| *c != '\u{0301}').count() <= MAX_RUSSIAN_CHARS
+                && text.split_whitespace().count() <= 4
+                && text.chars().any(is_russian_letter)
+                && text
+                    .chars()
+                    .all(|c| is_russian_letter(c) || matches!(c, ' ' | '-' | '\u{0301}'))
+                && valid_russian_stress(text)
+        }
         Language::English | Language::Chinese => {
             text.len() <= MAX_ENGLISH_BYTES
                 && text.split_whitespace().count() <= 4
@@ -165,6 +186,20 @@ fn is_spanish_char(c: char) -> bool {
     c.is_ascii_alphanumeric()
         || matches!(c, ' ' | '-' | '\'' | '.' | '/')
         || (matches!(c as u32, 0x00C0..=0x024F) && c.is_alphabetic())
+}
+
+/// 组合重音只能紧跟俄语元音，重复附标也拒收。
+fn valid_russian_stress(text: &str) -> bool {
+    let mut previous = ' ';
+    text.chars().all(|c| {
+        let valid = c != '\u{0301}' || "АЕИОУЫЭЮЯаеиоуыэюя".contains(previous);
+        previous = c;
+        valid
+    })
+}
+
+fn is_russian_letter(c: char) -> bool {
+    matches!(c, 'А'..='я' | 'Ё' | 'ё')
 }
 
 /// 全是假名（含长音、中点）。
@@ -243,5 +278,41 @@ mod tests {
         assert_eq!(clean_text("开发", Language::Spanish), None);
         assert_eq!(clean_text("разработка", Language::Spanish), None);
         assert!(system_prompt(Language::Spanish).contains("西班牙文"));
+    }
+
+    #[test]
+    fn russian_preserves_yo_and_stress_but_rejects_other_scripts() {
+        for text in ["самолёт", "учёба", "разрабо́тка", "по-русски", "доброе утро"]
+        {
+            assert_eq!(clean_text(text, Language::Russian).as_deref(), Some(text));
+        }
+        for text in [
+            "开发",
+            "development",
+            "розробці",
+            "разработка (программы)",
+            "\u{0301}учиться",
+            "сло\u{0301}\u{0301}во",
+            "слов\u{0301}о",
+            "---",
+            "ь".repeat(41).as_str(),
+        ] {
+            assert_eq!(clean_text(text, Language::Russian), None);
+        }
+        assert!(system_prompt(Language::Russian).contains("俄文"));
+    }
+
+    #[test]
+    fn parses_russian_glosses_without_japanese_readings() {
+        let words = vec!["学习".to_owned()];
+        let content = r#"{"items":[{"w":"学习","pos":"v.","senses":[{"t":"учи́ться","r":"うちつしゃ"},{"t":"learn"},{"t":"изуча́ть."}]},{"w":"未请求","senses":[{"t":"слово"}]}]}"#;
+        let filled = parse_reply(content, Language::Russian, &words);
+        assert_eq!(filled.len(), 1);
+        assert_eq!(filled[0].translation.language, Language::Russian);
+        let senses = filled[0].translation.senses();
+        assert_eq!(senses.len(), 2);
+        assert_eq!(senses[0].text, "учи́ться");
+        assert_eq!(senses[1].text, "изуча́ть");
+        assert_eq!(senses[0].reading, None);
     }
 }

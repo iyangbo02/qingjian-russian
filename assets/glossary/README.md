@@ -6,7 +6,7 @@
 解析在 `crates/qingjian-translate/src/glossary/mod.rs`，规则是严格的：任一行缺词或缺释义，
 整张表加载失败（`.qj` 打包走同一套解析）。
 
-本目录各表随代码以 **GPL-3.0-or-later** 发布，与仓库一致。各表来源不同，见下。
+本目录各表的来源与许可见下；俄语重音数据另保留 CC-BY-SA-4.0 许可和署名。
 
 ## 英语 / 日语（`glossary-en.tsv` / `glossary-ja.tsv`）
 
@@ -70,3 +70,29 @@ cargo run --release -p qingjian-gloss-gen -- export-english
 发布时随 `.qj` 一起作为 Release 附件保存，重跑前先从那里下载。
 
 生成时的提示词在 `tools/gloss-gen/src/prompt.rs`（中→英 / 日）与 `tools/gloss-gen/src/english.rs`（英→中）。
+
+## 俄语（`glossary-ru.tsv`）
+
+当前 1,656 个中文词条。在原有 1,000 条基础上新增 656 条：学术与课程 196 条、论文与课堂 166 条、日常生活 209 条、通讯与电脑 85 条。
+
+选词涵盖数字产品市场、全球化、稳定币跨境支付和数字教育。仅收录通用术语。
+
+`ru-study-dict.tsv` 提供 64 个重要中文术语的拼音候选（AI 编写，GPL-3.0-or-later）。macOS 随包置于 `dicts/ru-study.tsv`，在偏好设置词库页开启；也可导入为用户词库。
+中文与俄语译词配对由 AI 编写，未经过专业译者完整校对。
+重音和词形参考 [OpenRussian 数据](https://github.com/Badestrand/russian-dictionary)
+的 `50e210c4803237779cb562bc1abcea529066031c` 快照（nouns / verbs / adjectives / others）。
+OpenRussian 数据为 CC-BY-SA-4.0；原有中俄配对为 GPL-3.0-or-later。
+本表保留两类来源的许可，标识为 `GPL-3.0-or-later AND CC-BY-SA-4.0`。
+数据许可全文在 `LICENSE-OPENRUSSIAN.txt`，使用到的重音词形与定向选择在 `ru-stress-sources.json`。
+
+改动：将撇号重音转为 Unicode U+0301；按中文释义处理同形异音（锁 `замо́к`、面粉 `мука́`、写 `писа́ть`）。
+少量缺失项定向核对；语法补充词条与中俄配对由 AI 编写，核对来源见 JSON。
+多音节词标主重音，单音节词不额外标记；含 ё 的词保留 ё，不再叠加重音。
+名词通常用单数主格，动词用不定式；只有复数形式的名词保留复数。
+没有词汇等级表、自动变格、动词体配对或语音；未覆盖候选不会显示译词。
+云端补译提示要求相同的重音写法，但模型输出的词义和重音仍可能有误。
+
+打包：
+`cargo run -p qingjian-dict-convert -- pack glossary --language ru --license "GPL-3.0-or-later AND CC-BY-SA-4.0" --attribution "中俄配对由 AI 编写；重音来源 OpenRussian.org，定向校核"`
+
+俄语大型离线词典的本地导入工具为 `tools/corpus/glossary_ru_bkrs.py`，保留本目录学习词优先级；第三方全文不存入本目录，来源与重建方式见 [扩展说明](../../docs/notes/russian-dictionaries.md)。

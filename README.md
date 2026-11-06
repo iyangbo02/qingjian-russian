@@ -1,55 +1,56 @@
-<p align="center">
-  <img src="assets/icon/qingjian-mark.svg" alt="青简竹简图标" height="108">
-</p>
+# Qingjian Russian · 青简俄语衍生版
 
-<h1 align="center">青简 Qingjian</h1>
+基于 [qingjian-team/qingjian](https://github.com/qingjian-team/qingjian) 改进的**非官方俄语学习版本**。感谢原作者 [@yenharvey](https://github.com/yenharvey)、[@qingjian-team](https://github.com/qingjian-team) 及所有上游贡献者。输入引擎和原有功能来自青简，本仓库主要增加俄语译词、学习用重音和词典导入工具。
 
-<p align="center"><strong>好好输入，顺便多认识一个词。</strong></p>
+本分支基于上游提交 [`c08ae57`](https://github.com/qingjian-team/qingjian/commit/c08ae57cb88b6a4a46f4a5e9c1d6d11c5e69222e)（0.1.5-dev 开发阶段），**没有合并上游后续版本**。本项目不代表青简官方，也不宣称拥有青简名称、logo 或上游代码的原创权。完整 Git 历史与原有许可证保留。
 
-<p align="center">
-  <a href="https://qingjian.app/download"><img src="https://img.shields.io/github/v/release/qingjian-team/qingjian?label=stable" alt="stable release"></a>
-  <a href="https://github.com/qingjian-team/qingjian/stargazers"><img src="https://img.shields.io/github/stars/qingjian-team/qingjian?style=flat&amp;label=Stars" alt="GitHub Stars"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License: GPL-3.0-or-later"></a>
-  <a href="https://qingjian.app/docs/getting-started/install"><img src="https://img.shields.io/badge/macOS-13%2B-blue" alt="macOS 13+"></a>
-  <a href="https://qingjian.app/docs/getting-started/install"><img src="https://img.shields.io/badge/Windows-10%2F11-blue" alt="Windows 10/11"></a>
-  <a href="https://qingjian.app/docs/getting-started/linux"><img src="https://img.shields.io/badge/Linux-Fcitx5%20manual-lightgrey" alt="Linux Fcitx5，手动启动"></a>
-</p>
+## 增加了什么
 
-青简是一款输入法。你可以像平常一样打字：输入拼音、选择候选、写完整句；候选旁的一条译词，让语言学习自然发生在日常输入里。译词始终只是辅助信息，不会盖过你要输入的文字。
+- 学习语言增加俄语（`ru`），候选汉字旁显示俄语释义。
+- 自带 1,656 条中俄学习词条及 64 条中文术语候选；多音节俄语词标注重音，保留 ё。
+- 生词译文从橙黄色调整为蓝色，兼顾浅色与深色背景；熟词仍为灰色。
+- 提供 БКРС 离线词典导入工具，可在用户本机扩充覆盖范围。
+- 云端补译提示支持俄语与重音要求，需要自行配置服务。
 
-https://github.com/user-attachments/assets/d145fde9-a641-4543-8b15-dd7a2685de3d
+这是一款**中文输入法附带俄语译词**，不是俄语键盘，也不会自动根据句子对俄语变格或变位。
 
-视频演示了青简在 macOS 上的整句输入、候选重排和候选译词。
+## 词表规模与准确性
 
-## 下载与开始使用
+**仓库默认只包含 1,656 条学习词，不包含 157 万条词典全文。** БКРС 2026-10-06 数据曾在本机导入为 1,575,086 个合并释义词条，并补充 20,000 个中文候选；这不等于日常汉字的全部覆盖。导入器保留完整紧凑义项，同形异音或未知词形不猜重音。
 
-- **macOS、Windows**：[下载青简](https://qingjian.app/download)；安装步骤见[使用文档](https://qingjian.app/docs/getting-started/install)。
-- **Linux**：已有 Fcitx5 版本，使用系统默认候选面板；目前需要手动启动后台服务，详见 [Linux 安装说明](https://qingjian.app/docs/getting-started/linux)。
+中俄配对有 AI 辅助编写，未经过专业人员完整校对；释义与重音可能有误。БКРС 全量数据的再分发条款尚未完全核实，因此这里只公开导入工具、来源和重建步骤，不分发全量数据或包含它的安装包。见 [词典导入说明](docs/notes/russian-dictionaries.md)。
 
-macOS 与 Windows 版本仍处于测试阶段。安装后先选中青简，在「偏好设置 / 设置 → 通用」选择想学习的语言，就可以开始输入。第一次使用可从[第一次输入](https://qingjian.app/docs/getting-started/first-input)读起。
+## 构建与使用
 
-## 输入时，你会看到什么
+目前公开源码，不提供经过 Apple 公证的俄语版安装包。macOS 上已本机使用；Windows 与 Linux 有俄语接入代码，但本分支未完成各平台实机验证。
 
-```text
-1  开发        development
-2  编程        programming
-3  架构        architecture
+按 [上游开发文档](docs/) 准备 Rust 与平台依赖。在仓库根目录执行：
+
+```sh
+tools/release/data-fetch.sh
+apps/macos/scripts/bundle.sh --pkg
 ```
 
-候选旁一次只显示一种学习语言的译词。目前可以选择英语、日语或西班牙语，也可以关闭译词显示。青简还支持整句输入、简拼、拼写纠错、双拼、五笔等输入方式；本地整句模型会在停顿后调整句子候选。
+产物在 `target/pkg/`。产品数据由脚本从上游发布资源获取；俄语学习词表由本仓库打包。构建详细说明见 [俄语指南](RUSSIAN-README.md)。
 
-「统计」页还会显示今天、最近 7 天和累计的输入量，以及学习语言的词汇记录。详细用法见[输入功能](https://qingjian.app/docs/input)、[译词与生词](https://qingjian.app/docs/learning/translation)、[本地统计](https://qingjian.app/docs/learning/statistics)和[按键与快捷键](https://qingjian.app/docs/getting-started/keys)。
+安装后选择「青简 → 偏好设置 → 通用 → 学习语言 → 俄语」。本机为了避开候选汉字空白/方框问题，采用以下设置；如果遇到相同问题，可在配置文件中合并：
 
-## 数据与隐私
+```toml
+[general]
+learning_language = "ru"
+renderer = "system" # macOS 使用系统文字绘制
+```
 
-拼音转换、词库查询、本地模型和输入习惯学习在你的设备上完成。输入量与词汇统计也只保存在本机，不会上传；青简不需要账号。输入日志与统计分开保存，日志可在设置中关闭或清空，不影响统计。检查更新会向官网请求版本列表，可在设置中关闭。
+macOS 配置位置：`~/Library/Application Support/Qingjian/config.toml`。已有 `[general]` 时在该节内修改，不要重复添加节。汉字显示问题的根因尚未确认，此设置是已在本机验证的绕行方法。
 
-可选的**云联想默认关闭**。开启后，青简会把当前输入和附近的文字直接发送给你自行填写的 AI 服务商，以获取候选或整句补全；请求不经过青简的服务器。发送范围与本机保存的数据，见[数据与日志](https://qingjian.app/docs/help/data-and-logs)。
+俄语版与官方版使用相同应用标识和用户目录，会相互覆盖；安装任一版本前请备份个人词库、配置和扩展词典。官方安装包不包含本分支的俄语改动。
 
-## 文档、反馈与参与开发
+## 来源与许可
 
-- [使用文档](https://qingjian.app/docs)：安装、设置、输入、卸载与常见问题。
-- [反馈问题或建议](https://github.com/qingjian-team/qingjian/issues/new/choose)；也可以加入 [QQ 内测交流群](https://qm.qq.com/q/jBvn2gGTxm)。
-- 想参与开发？从[开发文档](docs/)和[开发约定](docs/contributing.md)开始。
+- 上游源码：[@yenharvey](https://github.com/yenharvey) 与 [qingjian-team/qingjian](https://github.com/qingjian-team/qingjian)，沿用 [GPL-3.0-or-later](LICENSE)。
+- 本分支代码改动：同样采用 GPL-3.0-or-later；修改清单见 [俄语指南](RUSSIAN-README.md)。
+- OpenRussian 重音及词形参考：快照 `50e210c4803237779cb562bc1abcea529066031c`，[原始数据](https://github.com/Badestrand/russian-dictionary)，[CC-BY-SA-4.0 许可](assets/glossary/LICENSE-OPENRUSSIAN.txt)。改编方式和使用的词形见 [来源记录](assets/glossary/ru-stress-sources.json)。
+- 中俄学习表的代码/配对与参考数据保留各自许可，详见 [词表来源](assets/glossary/README.md)；不把第三方数据重新声明为单一 GPL 数据。
+- БКРС 来源与本地使用说明见 [扩展词典文档](docs/notes/russian-dictionaries.md)。
 
-青简在[官方渠道](https://qingjian.app/download)免费提供。代码采用 [GPL-3.0-or-later](LICENSE) 许可；项目名称与 logo 不包含在代码授权中。随包数据有各自的来源与许可，见[数据来源清单](docs/design/landscape.md)。
+仅作为学习和社区改进用途。俄语版问题请在本仓库反馈；官方版问题请先在官方最新版复现后向上游反馈。

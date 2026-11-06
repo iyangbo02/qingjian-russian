@@ -68,6 +68,10 @@ cp -R apps/macos/resources/*.lproj "$APP/Contents/Resources/"
 # 词库与释义表打进 Resources。data/generated/ 里有生成好的产品数据（自建词库 + 语言模型 + LLM 释义表）就用它，
 # 否则用 assets/sample/ 的样例。没有数据管道的机器跑 tools/release/data-fetch.sh 按 tools/release/data.lock 下载。
 cp assets/sample/*.tsv "$APP/Contents/Resources/"
+cp assets/glossary/glossary-ru.tsv "$APP/Contents/Resources/"
+cp assets/glossary/LICENSE-OPENRUSSIAN.txt assets/glossary/ru-stress-sources.json "$APP/Contents/Resources/"
+mkdir -p "$APP/Contents/Resources/dicts"
+cp assets/glossary/ru-study-dict.tsv "$APP/Contents/Resources/dicts/ru-study.tsv"
 # emoji 表（Unicode CLDR，可发布）
 cp assets/emoji/*.tsv "$APP/Contents/Resources/"
 # 词汇等级表（CEFR-J / Octanove / JLPT，见 assets/levels/README.md），「统计」页按级数词汇
@@ -116,13 +120,16 @@ if [[ -f data/generated/dict.tsv || -f data/generated/dict.qj ]]; then
     echo "打包含章·通变：$p2c_dir/hanzhang-tongbian-small.qjm"
   fi
   # 释义表打成 .qj（TSV 比 .qj 新时重打），英文词表仍是 TSV。各表来源不同，元数据按表写（见 assets/glossary/README.md）
-  for lang in en ja zh es; do
+  for lang in en ja zh es ru; do
     src="assets/glossary/glossary-$lang.tsv"
     out="data/generated/glossary-$lang.qj"
     [[ -f "$src" ]] || continue
     if [[ "$lang" == es ]]; then
       license="GPL-3.0-or-later"
       attribution="Azure Translator 机器翻译（Tofuzhu，tools/corpus/glossary_es.py）"
+    elif [[ "$lang" == ru ]]; then
+      license="GPL-3.0-or-later AND CC-BY-SA-4.0"
+      attribution="中俄配对由 AI 编写；重音与词形来源 OpenRussian.org，定向校核，未经专业校对"
     else
       license="MIT"
       attribution="LLM 生成（DeepSeek），qingjian-gloss-gen"

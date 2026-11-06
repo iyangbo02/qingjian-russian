@@ -65,7 +65,7 @@ impl Theme {
             text_color: NSColor::labelColor(),
             gloss_color: NSColor::secondaryLabelColor(),
             pos_color: NSColor::tertiaryLabelColor(),
-            fresh_color: NSColor::systemOrangeColor(),
+            fresh_color: NSColor::systemBlueColor(),
             index_color: NSColor::tertiaryLabelColor(),
             cloud_color: NSColor::systemTealColor(),
             background: NSColor::windowBackgroundColor(),
